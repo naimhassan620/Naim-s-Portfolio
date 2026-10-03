@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Naim - Web Developer Portfolio</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        canvas#hero-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: -1;
+            image-rendering: high-quality;
+        }
+
+        #content-overlay {
+            position: relative;
+            z-index: 1;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.7) 100%);
+        }
+
+        /* Dynamic full-width container minimizing side margins across all displays */
+        .container {
+            width: 94%;
+            max-width: 1720px; 
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            box-sizing: border-box;
+        }
+
+        .glass {
+            background: rgba(17, 24, 39, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .badge {
+            color: #a78bfa;
+            background: rgba(139, 92, 246, 0.15);
+            padding: 0.4rem 1.2rem;
+            border-radius: 2rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 0.05em;
+            border: 1px solid rgba(139, 92, 246, 0.2);
+            text-transform: uppercase;
+            width: fit-content;
+            margin-bottom: 1.5rem;
+        }
+
+        section {
+            padding: 5rem 0;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        #home {
+            min-height: 100vh;
+            padding-top: 7.5rem;
+            padding-bottom: 4rem;
+        }
+
+        /* Navbar */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 1.25rem 0;
+            box-sizing: border-box;
+            z-index: 100;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        nav .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        nav .logo {
+            font-weight: 700;
+            font-size: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        nav .links {
+            display: flex;
+            gap: 2.5rem;
+        }
+        nav a {
+            color: #d1d5db;
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        nav a:hover {
+            color: #a78bfa;
+        }
+
+        /* Buttons */
+        .btn-group {
+            display: flex;
+            gap: 1rem;
+        }
+        .btn-primary {
+            background: #6366f1;
+            color: white;
+            border: none;
+            padding: 0.7rem 1.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s, transform 0.1s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-primary:hover {
+            background: #4f46e5;
+            transform: scale(1.02);
+            color: white;
+        }
+        .btn-secondary {
+            background: transparent;
+            color: white;
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 0.7rem 1.8rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.2s, border-color 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.4);
+            color: white;
+        }
+
+        /* Typography */
+        h1 { font-size: 4.5rem; margin: 0; line-height: 1.15; font-weight: 700; letter-spacing: -0.02em; }
+        h2 { font-size: 2.75rem; margin: 0 0 1rem 0; font-weight: 700; letter-spacing: -0.01em; }
+        h3 { font-size: 1.5rem; margin: 0; font-weight: 600; }
+        p { color: #9ca3af; line-height: 1.7; font-size: 1.05rem; }
+
+        /* Layout Grids and Flexes - Optimized for wider width */
+        .hero-layout { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 3.5rem; 
+            flex-wrap: wrap; 
+            width: 100%;
+        }
+        .hero-content { 
+            max-width: 720px; 
+            flex: 1.2; 
+            min-width: 320px; 
+        }
+        .hero-visuals { 
+            flex: 1; 
+            max-width: 520px; 
+            min-width: 320px; 
+            display: flex;
+            justify-content: flex-end;
+        }
+        .hero-visuals > div {
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .about-layout { 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between;
+            gap: 5rem; 
+            width: 100%;
+        }
+        .about-content { 
+            flex: 1.1; 
+            max-width: 680px; 
+        }
+        .about-stats { 
+            flex: 1.1; 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 1.75rem; 
+        }
+
+        .skills-container { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            text-align: center; 
+            padding: 4.5rem 3.5rem; 
+            border-radius: 1.5rem; 
+            box-sizing: border-box;
+            width: 100%;
+        }
+        .skills-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 2.5rem 3.5rem; 
+            width: 100%; 
+            max-width: 1500px; 
+            text-align: left; 
+        }
+
+        .projects-grid { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 2.5rem; 
+            width: 100%; 
+        }
+
+        .contact-layout { 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: space-between; 
+            gap: 5rem; 
+            width: 100%;
+        }
+        .contact-content { 
+            max-width: 650px; 
+            flex: 1.2; 
+        }
+        .contact-visuals { 
+            flex: 1; 
+            max-width: 480px; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
+
+        /* Tech Icons */
+        .tech-row { display: flex; gap: 1.5rem; align-items: center; flex-wrap: wrap; }
+        .tech-icon { height: 38px; width: 38px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); transition: transform 0.2s; }
+        .tech-icon:hover { transform: translateY(-4px) scale(1.1); }
+
+        /* Skill bars */
+        .skill-bar-container { width: 100%; height: 8px; background: rgba(255,255,255,0.08); border-radius: 4px; margin-top: 0.6rem; overflow: hidden; }
+        .skill-fill { height: 100%; background: linear-gradient(90deg, #6366f1, #a78bfa); border-radius: 4px; box-shadow: 0 0 10px rgba(99, 102, 241, 0.5); }
+
+        /* Project Cards */
+        .project-card { 
+            border-radius: 1rem; 
+            overflow: hidden; 
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease; 
+        }
+        .project-card:hover { transform: translateY(-8px); border-color: rgba(139, 92, 246, 0.4); box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3); }
+        .project-link {
+            color: #a78bfa;
+            text-decoration: none;
+            font-size: 0.95rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .project-link:hover {
+            color: #c4b5fd;
+            transform: translateX(4px);
+        }
+        .project-img { 
+            height: 240px; 
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(167, 139, 250, 0.05)); 
+            border-bottom: 1px solid rgba(255,255,255,0.08); 
+            position: relative; 
+            overflow: hidden;
+        }
+        .project-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            transition: transform 0.4s ease;
+            display: block;
+        }
+        .project-card:hover .project-img img {
+            transform: scale(1.06);
+        }
+        .project-img:not(.has-image)::after { 
+            content: ''; 
+            position: absolute; 
+            top: 50%; 
+            left: 50%; 
+            transform: translate(-50%, -50%); 
+            width: 60px; 
+            height: 60px; 
+            border-radius: 50%; 
+            background: radial-gradient(circle, rgba(167, 139, 250, 0.2) 0%, transparent 70%); 
+            border: 1px solid rgba(167, 139, 250, 0.3); 
+        }
+
+        /* Responsive Media Queries */
+        @media (max-width: 1200px) {
+            .skills-grid { grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+            .container { width: 95%; padding: 0 1.5rem; }
+        }
+
+        @media (max-width: 1024px) {
+            h1 { font-size: 3.5rem; }
+            h2 { font-size: 2.25rem; }
+            .about-layout { flex-direction: column; gap: 3rem; text-align: center; }
+            .about-layout .btn-secondary { margin: 0 auto; }
+            .contact-layout { flex-direction: column; gap: 3rem; text-align: center; }
+            .contact-visuals { align-items: center; }
+            .projects-grid { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 768px) {
+            .container { width: 100%; padding: 0 1.25rem; }
+            h1 { font-size: 2.5rem; }
+            h2 { font-size: 1.8rem; }
+            section { padding: 3rem 0; }
+            #home { padding-top: 7rem; }
+            
+            nav .nav-container { flex-direction: column; gap: 1rem; }
+            nav .links { gap: 1rem; flex-wrap: wrap; justify-content: center; font-size: 0.8rem; }
+            nav .btn-primary { display: none; }
+            
+            .hero-layout { flex-direction: column; text-align: center; }
+            .hero-content { align-items: center; display: flex; flex-direction: column; }
+            .hero-visuals { width: 100%; margin-top: 2rem; justify-content: center; }
+            
+            .btn-group { flex-direction: column; width: 100%; }
+            .btn-primary, .btn-secondary { width: 100%; text-align: center; }
+            .tech-row { justify-content: center; }
+            
+            .about-stats { grid-template-columns: 1fr; width: 100%; }
+            .skills-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .skills-container { padding: 3rem 1.5rem; }
+            .projects-grid { grid-template-columns: 1fr; }
+            
+            .badge { margin: 0 auto 1.5rem auto !important; }
+            
+            .contact-visuals { text-align: center; }
+            .contact-visuals > div { align-items: center; justify-content: center; }
+        }
+    </style>
+</head>
+<body>
+    <canvas id="hero-animation"></canvas>
+
+    <div id="content-overlay">
+        
+        <nav class="glass">
+            <div class="container nav-container">
+                <div class="logo"><span style="color: #a78bfa;">&lt;/&gt;</span> Naim Hassan</div>
+                <div class="links">
+                    <a href="#home">Home</a>
+                    <a href="#about">About</a>
+                    <a href="#skills">Skills</a>
+                    <a href="#projects">Projects</a>
+                    <a href="#contact">Contact</a>
+                </div>
+                <a href="mailto:252-15-620@diu.edu.bd" class="btn-primary">Hire Me &nearr;</a>
+            </div>
+        </nav>
+
+        <main>
+            <!-- HERO SECTION -->
+            <section id="home">
+                <div class="container hero-layout">
+                    <div class="hero-content">
+                        <div class="badge">I'm a Web Developer</div>
+                        <h1>Hi, I'm <span style="color: #a78bfa;">Naim</span><br>I build things for the web.</h1>
+                        <p style="margin: 1.5rem 0 2.5rem 0; font-size: 1.15rem; max-width: 620px;">I'm a passionate web developer specializing in building exceptional digital experiences with modern technologies.</p>
+                        
+                        <div class="btn-group">
+                            <a href="#projects" class="btn-primary">View My Work &nearr;</a>
+                            <a href="https://drive.google.com/file/d/1VV1-pFj9LDbONlzOh87rfiKmudmzkN3m/view?usp=drivesdk" target="_blank" rel="noopener noreferrer" class="btn-secondary">Download CV &darr;</a>
+                        </div>
+
+                        <!-- TECHNOLOGIES ROW -->
+                        <div style="margin-top: 4rem;">
+                            <div style="font-size: 0.75rem; color: #9ca3af; letter-spacing: 0.1em; font-weight: 600; margin-bottom: 1.5rem; text-transform: uppercase;">Technologies I work with</div>
+                            <div class="tech-row">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/html5/html5-original.svg" alt="HTML5" title="HTML5" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/css3/css3-original.svg" alt="CSS3" title="CSS3" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/javascript/javascript-original.svg" alt="JavaScript" title="JavaScript" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/typescript/typescript-original.svg" alt="TypeScript" title="TypeScript" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg" alt="React" title="React" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg" alt="Node.js" title="Node.js" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/git/git-original.svg" alt="Git" title="Git" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/c/c-original.svg" alt="C" title="C" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/cplusplus/cplusplus-original.svg" alt="C++" title="C++" class="tech-icon">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/unity/unity-original.svg" alt="Unity" title="Unity" class="tech-icon" style="filter: brightness(0) invert(1);">
+                                <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/blender/blender-original.svg" alt="Blender" title="Blender" class="tech-icon">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- CODE SNIPPET CARD -->
+                    <div class="hero-visuals">
+                        <div class="glass" style="border-radius: 0.75rem; overflow: hidden; background: rgba(15, 23, 42, 0.85); box-shadow: 0 20px 40px rgba(0,0,0,0.5); font-family: 'Courier New', Courier, monospace; font-size: 0.95rem; text-align: left;">
+                            <!-- Top Bar -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.03);">
+                                <span style="color: #d1d5db; font-weight: 600; font-size: 0.85rem; display: flex; align-items: center; gap: 0.5rem; font-family: 'Inter', sans-serif;">
+                                    <span style="color: #a78bfa;">&lt;/&gt;</span> Code
+                                </span>
+                                <span style="width: 10px; height: 10px; background: #22c55e; border-radius: 50%; box-shadow: 0 0 10px rgba(34, 197, 94, 0.6);"></span>
+                            </div>
+                            <!-- Code Content -->
+                            <div style="padding: 1.5rem; line-height: 1.9; color: #d1d5db;">
+                                <span style="color: #a78bfa;">const</span> developer = {<br>
+                                &nbsp;&nbsp;<span style="color: #60a5fa;">name</span>: <span style="color: #fb923c;">"Naim"</span>,<br>
+                                &nbsp;&nbsp;<span style="color: #60a5fa;">skills</span>: [<span style="color: #fb923c;">"HTML"</span>, <span style="color: #fb923c;">"CSS"</span>,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span style="color: #fb923c;">"JavaScript"</span>, <span style="color: #fb923c;">"React"</span>],<br>
+                                &nbsp;&nbsp;<span style="color: #60a5fa;">passion</span>: <span style="color: #fb923c;">"Building things<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;for the web"</span><br>
+                                };
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ABOUT SECTION -->
+            <section id="about">
+                <div class="container about-layout">
+                    <div class="about-content">
+                        <div class="badge">About Me</div>
+                        <h2>I'm passionate about<br>creating digital solutions</h2>
+                        <p style="margin-bottom: 2rem;">With 1+ year of experience in web development, I help businesses and individuals bring their ideas to life through clean, efficient, and user-friendly code.</p>
+                        <a href="#skills" class="btn-secondary">Learn More About Me</a>
+                    </div>
+                    <div class="about-stats">
+                        <div class="glass" style="padding: 1.75rem; border-radius: 1rem; display: flex; align-items: center; gap: 1.25rem; text-align: left;">
+                            <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 0.75rem; font-size: 1.5rem;">📅</div>
+                            <div>
+                                <h3 style="font-size: 1.75rem;">1+</h3>
+                                <p style="margin: 0; font-size: 0.875rem;">Years Experience</p>
+                            </div>
+                        </div>
+                        <div class="glass" style="padding: 1.75rem; border-radius: 1rem; display: flex; align-items: center; gap: 1.25rem; text-align: left;">
+                            <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 0.75rem; font-size: 1.5rem;">&lt;/&gt;</div>
+                            <div>
+                                <h3 style="font-size: 1.75rem;">7+</h3>
+                                <p style="margin: 0; font-size: 0.875rem;">Projects Completed</p>
+                            </div>
+                        </div>
+                        <div class="glass" style="padding: 1.75rem; border-radius: 1rem; display: flex; align-items: center; gap: 1.25rem; text-align: left;">
+                            <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 0.75rem; font-size: 1.5rem;">😊</div>
+                            <div>
+                                <h3 style="font-size: 1.75rem;">5+</h3>
+                                <p style="margin: 0; font-size: 0.875rem;">Happy Clients</p>
+                            </div>
+                        </div>
+                        <div class="glass" style="padding: 1.75rem; border-radius: 1rem; display: flex; align-items: center; gap: 1.25rem; text-align: left;">
+                            <div style="background: rgba(139, 92, 246, 0.15); padding: 1rem; border-radius: 0.75rem; font-size: 1.5rem;">🏆</div>
+                            <div>
+                                <h3 style="font-size: 1.75rem;">100%</h3>
+                                <p style="margin: 0; font-size: 0.875rem;">Client Satisfaction</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SKILLS SECTION -->
+            <section id="skills">
+                <div class="container glass skills-container">
+                    <div class="badge">My Skills</div>
+                    <h2 style="margin-bottom: 4rem;">Technologies I Master</h2>
+                    
+                    <div class="skills-grid">
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>HTML</span><span style="color: #9ca3af;">95%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 95%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>React.js</span><span style="color: #9ca3af;">85%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 85%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>CSS</span><span style="color: #9ca3af;">90%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 90%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>Next.js</span><span style="color: #9ca3af;">80%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 80%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>JavaScript</span><span style="color: #9ca3af;">90%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 90%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>TypeScript</span><span style="color: #9ca3af;">85%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 85%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>C</span><span style="color: #9ca3af;">85%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 85%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>Unity</span><span style="color: #9ca3af;">80%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 80%;"></div></div>
+                        </div>
+                        <div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 500; font-size: 1rem; margin-bottom: 0.2rem;">
+                                <span>Blender</span><span style="color: #9ca3af;">75%</span>
+                            </div>
+                            <div class="skill-bar-container"><div class="skill-fill" style="width: 75%;"></div></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- PROJECTS SECTION -->
+            <section id="projects">
+                <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+                    <div class="badge">Featured Projects</div>
+                    <h2 style="margin-bottom: 4rem;">Some of My Recent Work</h2>
+                    
+                    <div class="projects-grid">
+                        <div class="glass project-card">
+                            <div class="project-img has-image">
+                                <img src="./images/project-ecommerce.png" alt="E-Commerce Platform">
+                            </div>
+                            <div style="padding: 2rem;">
+                                <h3 style="font-size: 1.35rem; margin-bottom: 0.75rem;">E-Commerce Platform</h3>
+                                <p style="font-size: 0.95rem; margin-bottom: 2rem;">Full-stack e-commerce solution with modern UI/UX</p>
+                                <a href="https://github.com/naimhassan620?tab=repositories" target="_blank" rel="noopener noreferrer" class="project-link">View Project &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="glass project-card">
+                            <div class="project-img has-image">
+                                <img src="./images/project-type-learn.png" alt="Type & Learn">
+                            </div>
+                            <div style="padding: 2rem;">
+                                <h3 style="font-size: 1.35rem; margin-bottom: 0.75rem;">Type & Learn</h3>
+                                <p style="font-size: 0.95rem; margin-bottom: 2rem;">Interactive typing platform to improve speed and memorize complex spelling</p>
+                                <a href="https://github.com/naimhassan620?tab=repositories" target="_blank" rel="noopener noreferrer" class="project-link">View Project &rarr;</a>
+                            </div>
+                        </div>
+                        <div class="glass project-card">
+                            <div class="project-img has-image">
+                                <img src="./images/project-restaurant.png" alt="Restaurant Order Management">
+                            </div>
+                            <div style="padding: 2rem;">
+                                <h3 style="font-size: 1.35rem; margin-bottom: 0.75rem;">Restaurant Order Management</h3>
+                                <p style="font-size: 0.95rem; margin-bottom: 2rem;">Order management system to track live food orders and monitor restaurant revenue</p>
+                                <a href="https://github.com/naimhassan620?tab=repositories" target="_blank" rel="noopener noreferrer" class="project-link">View Project &rarr;</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- CONTACT SECTION -->
+            <section id="contact">
+                <div class="container contact-layout">
+                    <div class="contact-content">
+                        <div class="badge">Let's Work Together</div>
+                        <h2 style="margin-bottom: 1.5rem;">Have a project in mind?</h2>
+                        <p style="margin-bottom: 2.5rem; font-size: 1.1rem;">I'm always open to discussing new projects and opportunities. Let's create something amazing together!</p>
+                        <a href="mailto:252-15-620@diu.edu.bd" class="btn-primary" style="padding: 0.9rem 2.5rem; font-size: 1.05rem;">Get In Touch &nearr;</a>
+                    </div>
+                    
+                    <div class="contact-visuals">
+                        <div style="font-size: 0.85rem; font-weight: 700; color: #a78bfa; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 1.5rem;">Follow Me</div>
+                        
+                        <div style="display: flex; gap: 1.5rem; margin-bottom: 2.5rem; align-items: center;">
+                            <a href="https://github.com/naimhassan620" target="_blank" rel="noopener noreferrer" style="color: white; transition: transform 0.2s; display: inline-block;" onmouseover="this.style.transform='translateY(-3px) scale(1.12)'" onmouseout="this.style.transform='none'" aria-label="GitHub">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            </a>
+                            <a href="https://www.linkedin.com/in/naim-hassan-508882364?utm_source=share_via&amp;utm_content=profile&amp;utm_medium=member_ios" target="_blank" rel="noopener noreferrer" style="color: #3b82f6; transition: transform 0.2s; display: inline-block;" onmouseover="this.style.transform='translateY(-3px) scale(1.12)'" onmouseout="this.style.transform='none'" aria-label="LinkedIn">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+                            </a>
+                            <a href="#" style="color: #1da1f2; transition: transform 0.2s; display: inline-block;">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="currentColor"><path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.798-1.574 2.165-2.724-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.179 0-5.515 2.966-4.797 6.045-4.091-.205-7.719-2.165-10.148-5.144-1.29 2.213-.669 5.108 1.523 6.574-.806-.026-1.566-.247-2.229-.616-.054 2.281 1.581 4.415 3.949 4.89-.693.188-1.452.232-2.224.084.626 1.956 2.444 3.379 4.6 3.419-2.07 1.623-4.678 2.348-7.29 2.04 2.179 1.397 4.768 2.212 7.548 2.212 9.142 0 14.307-7.721 13.995-14.646.962-.695 1.797-1.562 2.457-2.549z"/></svg>
+                            </a>
+                            <a href="#" style="transition: transform 0.2s; display: inline-block;">
+                                <svg width="30" height="30" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="ig-grad" x1="20%" y1="20%" x2="80%" y2="80%">
+                                            <stop offset="0%" stop-color="#fdf497" />
+                                             <stop offset="5%" stop-color="#fdf497" />
+                                            <stop offset="45%" stop-color="#fd5949" />
+                                            <stop offset="60%" stop-color="#d6249f" />
+                                            <stop offset="90%" stop-color="#285AEB" />
+                                        </linearGradient>
+                                    </defs>
+                                    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" fill="url(#ig-grad)"/>
+                                </svg>
+                            </a>
+                        </div>
+
+                        <div style="display: flex; flex-direction: column; gap: 1.2rem;">
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="color: #a78bfa; display: flex;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+                                </div>
+                                <a href="mailto:252-15-620@diu.edu.bd" style="font-size: 1rem; color: #d1d5db; font-weight: 500; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#d1d5db'">252-15-620@diu.edu.bd</a>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="color: #a78bfa; display: flex;">
+                                    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1zM19 12h2a9 9 0 0 0-9-9v2c3.87 0 7 3.13 7 7zm-4 0h2c0-2.76-2.24-5-5-5v2c1.66 0 3 1.34 3 3z"/></svg>
+                                </div>
+                                <a href="tel:+8801783774820" style="font-size: 1rem; color: #d1d5db; font-weight: 500; text-decoration: none; transition: color 0.2s;" onmouseover="this.style.color='#a78bfa'" onmouseout="this.style.color='#d1d5db'">+8801783774820</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <footer style="padding: 2.5rem 0; border-top: 1px solid rgba(255,255,255,0.05); background: rgba(0,0,0,0.6);">
+            <div class="container" style="display: flex; justify-content: space-between; color: #9ca3af; font-size: 0.9rem;">
+                <div>&copy; 2024 Naim Developer. All rights reserved.</div>
+                <div>Made with &hearts; by Naim</div>
+            </div>
+        </footer>
+
+    </div>
+
+    <script>
+        const html = document.documentElement;
+        const canvas = document.getElementById("hero-animation");
+        const context = canvas.getContext("2d", { alpha: false }); 
+
+        const frameCount = 240;
+        const images = [];
+        
+        let canvasWidth, canvasHeight;
+        
+        const resizeCanvas = () => {
+            const ratio = window.devicePixelRatio || 1;
+            canvasWidth = window.innerWidth * ratio;
+            canvasHeight = window.innerHeight * ratio;
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            if (images.length > 0) {
+                drawScrollFrame();
+            }
+        };
+        window.addEventListener('resize', resizeCanvas);
+
+        const currentFrame = index => (
+            `./images/ezgif-frame-${index.toString().padStart(3, '0')}.jpg`
+        )
+
+        const preloadImages = () => {
+            for (let i = 1; i <= frameCount; i++) {
+                const img = new Image();
+                img.src = currentFrame(i);
+                images.push(img);
+            }
+        };
+        preloadImages();
+
+        const drawCover = (img) => {
+            const imgRatio = img.width / img.height;
+            const canvasRatio = canvasWidth / canvasHeight;
+            let drawWidth, drawHeight, offsetX, offsetY;
+
+            if (canvasRatio > imgRatio) {
+                drawWidth = canvasWidth;
+                drawHeight = canvasWidth / imgRatio;
+                offsetX = 0;
+                offsetY = (canvasHeight - drawHeight) / 2;
+            } else {
+                drawHeight = canvasHeight;
+                drawWidth = canvasHeight * imgRatio;
+                offsetX = (canvasWidth - drawWidth) / 2;
+                offsetY = 0;
+            }
+            
+            context.clearRect(0, 0, canvasWidth, canvasHeight);
+            context.drawImage(img, offsetX, offsetY, drawWidth, drawHeight);
+        };
+
+        const updateImage = index => {
+            const safeIndex = Math.max(1, Math.min(index, frameCount));
+            const img = images[safeIndex - 1];
+            
+            if (img && img.complete) {
+                drawCover(img);
+            }
+        }
+
+        const drawScrollFrame = () => {
+            const scrollTop = html.scrollTop;
+            const maxScrollTop = html.scrollHeight - window.innerHeight;
+            const scrollFraction = maxScrollTop <= 0 ? 0 : scrollTop / maxScrollTop;
+            const frameIndex = Math.min(
+                frameCount - 1,
+                Math.ceil(scrollFraction * frameCount)
+            );
+            updateImage(frameIndex + 1);
+        };
+
+        resizeCanvas();
+
+        if (images[0].complete) {
+            updateImage(1);
+        } else {
+            images[0].onload = () => {
+                updateImage(1);
+            }
+        }
+
+        let ticking = false;
+        window.addEventListener('scroll', () => {  
+            if (!ticking) {
+                window.requestAnimationFrame(() => {
+                    drawScrollFrame();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        });
+    </script>
+</body>
+</html>
